@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+		<id>SimpleChannel.Net</id>
+		<version>$version$</version>
+		<title>SimpleChannel.Net</title>
+		<authors>SplitIce</authors>
+		<owners>SplitIce</owners>
+		<projectUrl>https://github.com/splitice/SimpleChannel.Net</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>A simple channel based communication framework</description>
+		<releaseNotes>Automatic Updates via GitHub</releaseNotes>
+		<copyright>MIT</copyright>
+		<language>en-US</language>
+	</metadata>
+	<files>
+		<file src="SimpleChannel.Net/bin/Release/SimpleChannel.Net.dll" target="lib" />
+	</files>
+</package>
