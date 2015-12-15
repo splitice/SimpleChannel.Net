@@ -13,6 +13,9 @@ script:
   - export EnableNuGetPackageRestore=false
   - mozroots --import --sync
   - travis_retry mono --runtime=v4.0.30319 .nuget/NuGet.exe restore SimpleChannel.Net.sln
+  - ls -las packages
+  - ls -las packages/*
+  - ls -las packages/*/*  
   - xbuild CI.proj
 #  - sudo nunit-console -framework=4.0 ./QuadTrees.Tests/bin/Debug/QuadTrees.Tests.dll -exclude Integration,NotWorkingOnMono
   - travis_retry bash travis-ci/nuget-upload.sh
