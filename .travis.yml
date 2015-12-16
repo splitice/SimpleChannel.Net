@@ -8,14 +8,11 @@ install:
   - sudo apt-get update
   - sudo apt-get -qq install mono-devel mono-gmcs mono-utils mono-complete libmono-system2.0-cil libmono-corlib2.0-cil mono-2.0-gac nunit-console realpath
   
-script:
+script:	
   - bash travis-ci/autoversion.sh SimpleChannel.Net
   - export EnableNuGetPackageRestore=false
   - mozroots --import --sync
-  - travis_retry mono --runtime=v4.0.30319 .nuget/NuGet.exe restore SimpleChannel.Net.sln
-  - ls -las packages
-  - ls -las packages/*
-  - ls -las packages/*/*  
+  - travis_retry mono --runtime=v4.0.30319 .nuget/NuGet.exe restore SimpleChannel.Net.sln 
   - xbuild CI.proj
 #  - sudo nunit-console -framework=4.0 ./QuadTrees.Tests/bin/Debug/QuadTrees.Tests.dll -exclude Integration,NotWorkingOnMono
   - travis_retry bash travis-ci/nuget-upload.sh
