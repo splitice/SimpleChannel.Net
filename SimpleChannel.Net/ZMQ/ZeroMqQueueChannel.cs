@@ -10,16 +10,18 @@ using NetMQ.Sockets;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Framing.Impl;
+using SimpleChannel.Net.Common;
 
 namespace SimpleChannel.Net.ZMQ
 {
-    public class ZeroMqQueueChannel<T> : IChannel<T> where T : class
+    public class ZeroMqQueueChannel<T> : ZeroMqAbstractChannel, IChannel<T> where T : class
     {
         protected readonly String Name;
         private readonly DataContractSerializer _ser;
         private PushSocket _publisherSocket;
         private PullSocket _subscriberSocket;
         private string _connectionString;
+        private bool _producing = true;
 
         protected ZeroMqQueueChannel(String name, String connectionString, bool bind)
         {
@@ -34,6 +36,19 @@ namespace SimpleChannel.Net.ZMQ
             _connectionString = connectionString;
         }
 
+        public bool Producing
+        {
+            get { return _producing; }
+        }
+
+        public void CloseProducer()
+        {
+            InternalPut(new RemoteCloseProducer(), null);
+        }
+
+        public void CloseConsumer()
+        {
+        }
 
         public bool Offer(T toPut, int ms)
         {
@@ -41,12 +56,17 @@ namespace SimpleChannel.Net.ZMQ
             throw new NotImplementedException();
         }
 
-        public void Put(T item, String routingKey)
+        private void InternalPut(object item, String routingKey)
         {
             MemoryStream stream = new MemoryStream();
             _ser.WriteObject(stream, item);
 
             _publisherSocket.SendMoreFrame(Name).SendFrame(stream.ToArray());
+        }
+
+        public void Put(T item, String routingKey)
+        {
+            InternalPut(item, routingKey);
         }
 
         /// <summary>
@@ -90,16 +110,26 @@ namespace SimpleChannel.Net.ZMQ
             }
 
             //Deserialize
+            object temp;
             try
             {
                 var stream = new MemoryStream(result);
-                val = _ser.ReadObject(stream) as T;
+                temp = _ser.ReadObject(stream);
             }
             catch (Exception)
             {
                 val = default(T);
                 return false;
             }
+
+            if (temp is RemoteCloseProducer)
+            {
+                _producing = false;
+                val = default(T);
+                return false;
+            }
+
+            val = temp as T;
 
             return true;
         }

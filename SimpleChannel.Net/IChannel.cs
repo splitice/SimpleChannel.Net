@@ -15,6 +15,21 @@
     public interface IChannel<T> : IChannel
     {
         /// <summary>
+        /// True if the producer side of the channel is open
+        /// </summary>
+        bool Producing { get; }
+
+        /// <summary>
+        /// Close the producer side of the channel
+        /// </summary>
+        void CloseProducer();
+
+        /// <summary>
+        /// Close the consumer side of the channel
+        /// </summary>
+        void CloseConsumer();
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="toPut"></param>

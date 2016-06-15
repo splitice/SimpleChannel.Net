@@ -8,6 +8,7 @@ namespace SimpleChannel.Net.Threading
         private T _value = null;
         private object _valueLock = new object();
         private SemaphoreSlim _semaphore = new SemaphoreSlim(0);
+        private bool _producing = true;
 
         public bool Offer(T toPut, int ms)
         {
@@ -49,6 +50,20 @@ namespace SimpleChannel.Net.Threading
         public void Ack()
         {
             //Do nothing
+        }
+
+        public void CloseProducer()
+        {
+            _producing = false;
+        }
+
+        public bool Producing
+        {
+            get { return _producing; }
+        }
+
+        public void CloseConsumer()
+        {
         }
     }
 }

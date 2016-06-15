@@ -14,6 +14,7 @@ namespace SimpleChannel.Net.MySQL
         private readonly string _ackQuery = null;
         private MySqlConnection _connection;
         private MySqlDataReader _reader;
+        private bool _producing = true;
 
         public MySqlBulkChannel(MySqlConnection connection, String sqlQuery)
         {
@@ -28,6 +29,21 @@ namespace SimpleChannel.Net.MySQL
             {
                 //TODO: implement?
             }
+        }
+
+        public bool Producing
+        {
+            get { return _producing; }
+        }
+
+        public void CloseProducer()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CloseConsumer()
+        {
+            throw new NotImplementedException();
         }
 
         public bool Offer(T toPut, int ms)

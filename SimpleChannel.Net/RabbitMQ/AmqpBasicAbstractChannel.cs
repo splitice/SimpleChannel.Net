@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SimpleChannel.Net.Common;
 
 namespace SimpleChannel.Net.RabbitMQ
 {
@@ -14,12 +15,13 @@ namespace SimpleChannel.Net.RabbitMQ
         private ulong? _lastDelivery = null;
         private QueueingBasicConsumer _consumer;
         private string _exchange;
+        private bool _producing = true;
 
         protected AmqpBasicAbstractChannel(IModel model, String name, String exchange = "")
         {
             Model = model;
             Name = name;
-            _ser = new DataContractSerializer(typeof(T));
+            _ser = new DataContractSerializer(typeof(object), new[] { typeof(T), typeof(RemoteCloseProducer) });
             _consumer = null;
             _exchange = exchange;
         }
@@ -51,11 +53,17 @@ namespace SimpleChannel.Net.RabbitMQ
             throw new NotImplementedException();
         }
 
-        public void Put(T item, String routingKey)
+
+        private void PutObject<TItem>(TItem item, String routingKey)
         {
             MemoryStream stream = new MemoryStream();
             _ser.WriteObject(stream, item);
             Model.BasicPublish(_exchange, routingKey, null, stream.ToArray());
+        }
+
+        public void Put(T item, String routingKey)
+        {
+            PutObject(item, routingKey);
         }
 
         /// <summary>
@@ -89,10 +97,11 @@ namespace SimpleChannel.Net.RabbitMQ
             }
 
             //Deserialize
+            object obj;
             try
             {
                 var stream = new MemoryStream(result.Body);
-                val = _ser.ReadObject(stream) as T;
+                obj = _ser.ReadObject(stream);
             }
             catch (Exception)
             {
@@ -100,6 +109,15 @@ namespace SimpleChannel.Net.RabbitMQ
                 Model.BasicAck(result.DeliveryTag, false);
                 return false;
             }
+
+            if (obj is RemoteCloseProducer)
+            {
+                _producing = false;
+                val = default(T);
+                return false;
+            }
+            val = obj as T;
+
             _lastDelivery = result.DeliveryTag;
 
             return true;
@@ -134,6 +152,22 @@ namespace SimpleChannel.Net.RabbitMQ
         public T Take()
         {
             return Take(false);
+        }
+
+        public void CloseProducer()
+        {
+            PutObject(new RemoteCloseProducer(), Name);
+            Model.Close();
+        }
+
+        public bool Producing
+        {
+            get { return _producing; }
+        }
+
+        public void CloseConsumer()
+        {
+            Model.Close();
         }
 
         /// <summary>

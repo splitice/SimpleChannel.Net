@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\RemoteCloseProducer.cs" />
     <Compile Include="IChannel.cs" />
     <Compile Include="MySql\IMysqlObject.cs" />
     <Compile Include="MySql\MySqlBulkChannel.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Threading\BoundedChannel.cs" />
     <Compile Include="Threading\Channel.cs" />
     <Compile Include="Threading\SimpleValueChannel.cs" />
+    <Compile Include="ZMQ\ZeroMqAbstractChannel.cs" />
     <Compile Include="ZMQ\ZeroMqQueueChannel.cs" />
     <Compile Include="ZMQ\ZeroMqExchangeChannel.cs" />
   </ItemGroup>

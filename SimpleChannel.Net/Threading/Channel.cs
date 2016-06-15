@@ -9,10 +9,26 @@ namespace SimpleChannel.Net.Threading
         private SemaphoreSlim takePerm;
         private Queue<T> queue = new Queue<T>();
         private object _lock = new object();
+        private bool _producing = true;
 
         public Channel()
         {
             takePerm = new SemaphoreSlim(0);
+        }
+
+        public void CloseProducer()
+        {
+            _producing = false;
+        }
+
+        public bool Producing
+        {
+            get { return _producing; }
+        }
+
+        public void CloseConsumer()
+        {
+
         }
 
         public virtual T Take()
