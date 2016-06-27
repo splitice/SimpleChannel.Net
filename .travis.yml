@@ -11,7 +11,7 @@ install:
 script:	
   - bash travis-ci/autoversion.sh SimpleChannel.Net
   - export EnableNuGetPackageRestore=false
-  - mozroots --import --sync
+  - cert-sync /etc/ssl/certs/ca-certificates.crt
   - travis_retry mono --runtime=v4.0.30319 .nuget/NuGet.exe restore SimpleChannel.Net.sln 
   - xbuild CI.proj
 #  - sudo nunit-console -framework=4.0 ./QuadTrees.Tests/bin/Debug/QuadTrees.Tests.dll -exclude Integration,NotWorkingOnMono
