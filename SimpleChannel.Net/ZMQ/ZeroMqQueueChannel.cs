@@ -18,8 +18,8 @@ namespace SimpleChannel.Net.ZMQ
     {
         protected readonly String Name;
         private readonly DataContractSerializer _ser;
-        private PushSocket _publisherSocket;
-        private PullSocket _subscriberSocket;
+        private PublisherSocket _publisherSocket;
+        private SubscriberSocket _subscriberSocket;
         private string _connectionString;
         private bool _producing = true;
 
@@ -32,7 +32,7 @@ namespace SimpleChannel.Net.ZMQ
             {
                 pubStr = ">" + connectionString;
             }
-            _publisherSocket = new PushSocket(pubStr);
+            _publisherSocket = new PublisherSocket(pubStr);
             _connectionString = connectionString;
         }
 
@@ -87,7 +87,7 @@ namespace SimpleChannel.Net.ZMQ
         {
             if (_subscriberSocket == null)
             {
-                _subscriberSocket = new PullSocket(">"+_connectionString);
+                _subscriberSocket = new SubscriberSocket(">"+_connectionString);
                 _subscriberSocket.Subscribe(Name);
             }
 
@@ -102,6 +102,7 @@ namespace SimpleChannel.Net.ZMQ
                 }
             }
 
+            string messageTopicReceived = _subscriberSocket.ReceiveFrameString();
             var result = _subscriberSocket.ReceiveFrameBytes();
             if (result == null)
             {

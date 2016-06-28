@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleChannel.Net", "SimpleChannel.Net\SimpleChannel.Net.csproj", "{89BC492F-3F1D-4999-9A60-987C0A4F98E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleChannel.Net.Tests", "SimpleChannel.Net.Tests\SimpleChannel.Net.Tests.csproj", "{AE18FC6E-DA96-4D2E-AC5D-845429461214}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{89BC492F-3F1D-4999-9A60-987C0A4F98E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89BC492F-3F1D-4999-9A60-987C0A4F98E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89BC492F-3F1D-4999-9A60-987C0A4F98E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE18FC6E-DA96-4D2E-AC5D-845429461214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE18FC6E-DA96-4D2E-AC5D-845429461214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE18FC6E-DA96-4D2E-AC5D-845429461214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE18FC6E-DA96-4D2E-AC5D-845429461214}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
