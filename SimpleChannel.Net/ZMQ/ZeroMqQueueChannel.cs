@@ -28,9 +28,9 @@ namespace SimpleChannel.Net.ZMQ
             Name = name;
             _ser = new DataContractSerializer(typeof(T));
             String pubStr = connectionString;
-            if (bind)
+            if (!bind)
             {
-                pubStr = "@" + connectionString;
+                pubStr = ">" + connectionString;
             }
             _publisherSocket = new PushSocket(pubStr);
             _connectionString = connectionString;
