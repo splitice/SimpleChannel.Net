@@ -23,7 +23,7 @@ namespace SimpleChannel.Net.ZMQ
         private string _connectionString;
         private bool _producing = true;
 
-        protected ZeroMqExchangeChannel(String name, String connectionString, bool bind)
+        public ZeroMqExchangeChannel(String name, String connectionString, bool bind)
         {
             Name = name;
             _ser = new DataContractSerializer(typeof(T));
