@@ -52,8 +52,13 @@ namespace SimpleChannel.Net.ZMQ
 
         public bool Offer(T toPut, int ms)
         {
-            //TODO: just use timeout (but not block)?
-            throw new NotImplementedException();
+            bool pollWrite = _publisherSocket.Poll(PollEvents.PollOut, TimeSpan.FromMilliseconds(ms)) == PollEvents.PollOut;
+            if (!pollWrite)
+            {
+                return false;
+            }
+            InternalPut(toPut, "");
+            return true;
         }
 
         private void InternalPut(object item, String routingKey)
