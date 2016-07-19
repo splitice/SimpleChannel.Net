@@ -26,7 +26,7 @@ namespace SimpleChannel.Net.ZMQ
         public ZeroMqQueueChannel(String name, String connectionString, bool bind)
         {
             Name = name;
-            _ser = new DataContractSerializer(typeof(T));
+            _ser = new DataContractSerializer(typeof(object), new[] { typeof(T), typeof(RemoteCloseProducer) });
             String pubStr = connectionString;
             if (!bind)
             {
