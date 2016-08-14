@@ -69,6 +69,7 @@
     <Compile Include="RabbitMQ\AmqpBasicQueueChannel.cs" />
     <Compile Include="Threading\BoundedChannel.cs" />
     <Compile Include="Threading\Channel.cs" />
+    <Compile Include="Threading\NullChannel.cs" />
     <Compile Include="Threading\SimpleValueChannel.cs" />
     <Compile Include="ZMQ\ZeroMqAbstractChannel.cs" />
     <Compile Include="ZMQ\ZeroMqQueueChannel.cs" />
