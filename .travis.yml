@@ -18,5 +18,5 @@ script:
   - cert-sync /etc/ssl/certs/ca-certificates.crt
   - travis_retry mono --runtime=v4.0.30319 .nuget/NuGet.exe restore SimpleChannel.Net.sln 
   - xbuild CI.proj
-  - mono ./testrunner/N/NUnit.ConsoleRunner.3.4.0/tools/nunit3-console.exe -framework=4.0 ./SimpleChannel.Net.Tests/bin/Debug/SimpleChannel.Net.Tests.dll -exclude Integration,NotWorkingOnMono
+  - mono ./testrunner/NUnit.ConsoleRunner.3.4.0/tools/nunit3-console.exe -framework=4.0 ./SimpleChannel.Net.Tests/bin/Debug/SimpleChannel.Net.Tests.dll -exclude Integration,NotWorkingOnMono
   - travis_retry bash travis-ci/nuget-upload.sh
