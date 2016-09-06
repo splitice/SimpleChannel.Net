@@ -5,7 +5,11 @@ mono:
   - latest
 git:
   depth: 300
-  
+addons:
+  apt:
+    packages:
+     - realpath
+
 install:
   - nuget install NUnit.Runners -Version 3.4.0 -OutputDirectory testrunner
 script:	
