@@ -18,7 +18,7 @@ namespace SimpleChannel.Net.Tests
     [TestFixture]
     public class ZeroMqTests
     {
-        private void SetupConnecitons<T>(out ZeroMqQueueChannel<T> qcOut, out ZeroMqQueueChannel<T> qcIn, int port) where T : class
+        private void SetupConnections<T>(out ZeroMqQueueChannel<T> qcOut, out ZeroMqQueueChannel<T> qcIn, int port) where T : class
         {
             qcOut = new ZeroMqQueueChannel<T>("N", "tcp://127.0.0.1:"+port, true);
             qcIn = new ZeroMqQueueChannel<T>("N", "tcp://127.0.0.1:" + port, false);
@@ -32,7 +32,7 @@ namespace SimpleChannel.Net.Tests
         public void TestZmqEmpty()
         {
             ZeroMqQueueChannel<TestModel> qcOut, qcIn;
-            SetupConnecitons(out qcOut, out qcIn, 1111);
+            SetupConnections(out qcOut, out qcIn, 1111);
 
             TestModel tm = null;
             qcIn.Poll(out tm, 10);
@@ -46,7 +46,7 @@ namespace SimpleChannel.Net.Tests
         public void TestZmqPutTake()
         {
             ZeroMqQueueChannel<TestModel> qcOut, qcIn;
-            SetupConnecitons(out qcOut, out qcIn, 1112);
+            SetupConnections(out qcOut, out qcIn, 1112);
 
             TestModel model;
             var task = Task.Run(() => model = qcIn.Take());
@@ -64,7 +64,7 @@ namespace SimpleChannel.Net.Tests
         public void TestZmqPutPoll()
         {
             ZeroMqQueueChannel<TestModel> qcOut, qcIn;
-            SetupConnecitons(out qcOut, out qcIn, 1113);
+            SetupConnections(out qcOut, out qcIn, 1113);
 
             TestModel model;
 
