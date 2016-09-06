@@ -65,5 +65,10 @@ namespace SimpleChannel.Net.Threading
         public void CloseConsumer()
         {
         }
+
+        public void Dispose()
+        {
+            _semaphore.Dispose();
+        }
     }
 }

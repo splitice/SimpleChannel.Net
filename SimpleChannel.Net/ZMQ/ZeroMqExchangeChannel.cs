@@ -161,5 +161,17 @@ namespace SimpleChannel.Net.ZMQ
         public void Ack()
         {
         }
+
+        public void Dispose()
+        {
+            if (_publisherSocket != null)
+            {
+                _publisherSocket.Dispose();
+            }
+            if (_subscriberSocket != null)
+            {
+                _subscriberSocket.Dispose();
+            }
+        }
     }
 }

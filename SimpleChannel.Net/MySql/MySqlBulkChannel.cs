@@ -96,5 +96,11 @@ namespace SimpleChannel.Net.MySQL
             }
             return ret;
         }
+
+        public void Dispose()
+        {
+            _reader.Dispose();
+            _connection.Dispose();
+        }
     }
 }

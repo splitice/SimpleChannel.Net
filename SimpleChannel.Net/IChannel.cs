@@ -1,6 +1,8 @@
-﻿namespace SimpleChannel.Net
+﻿using System;
+
+namespace SimpleChannel.Net
 {
-    public interface IChannel
+    public interface IChannel: IDisposable
     {
         /// <summary>
         /// Acknowledge the last consumed message

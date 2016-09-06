@@ -182,5 +182,10 @@ namespace SimpleChannel.Net.RabbitMQ
             Model.BasicAck(_lastDelivery.Value, false);
             _lastDelivery = null;
         }
+
+        public void Dispose()
+        {
+            Model.Dispose();
+        }
     }
 }

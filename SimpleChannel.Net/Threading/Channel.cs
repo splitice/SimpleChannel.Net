@@ -81,6 +81,11 @@ namespace SimpleChannel.Net.Threading
         {
             Offer(toPut, -1);
         }
+
+        public void Dispose()
+        {
+            takePerm.Dispose();
+        }
     }
 }
 
