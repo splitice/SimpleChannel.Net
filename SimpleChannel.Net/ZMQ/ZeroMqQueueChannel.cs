@@ -66,7 +66,14 @@ namespace SimpleChannel.Net.ZMQ
             MemoryStream stream = new MemoryStream();
             _ser.WriteObject(stream, item);
 
-            _publisherSocket.SendMoreFrame(Name).SendFrame(stream.ToArray());
+            try
+            {
+                _publisherSocket.SendMoreFrame(Name).SendFrame(stream.ToArray());
+            }
+            catch (NetMQ.TerminatingException)
+            {
+                
+            }
         }
 
         public void Put(T item, String routingKey)
