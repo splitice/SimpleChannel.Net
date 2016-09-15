@@ -18,6 +18,7 @@ namespace SimpleChannel.Net.Threading
 
         public bool Poll(out T val, int timeout)
         {
+            Thread.Sleep(timeout);
             val = null;
             return false;
         }
