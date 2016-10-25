@@ -23,6 +23,11 @@ namespace SimpleChannel.Net.ZMQ
         private string _connectionString;
         private bool _producing = true;
 
+        public SocketOptions SendHighWatermark
+        {
+            get { return _publisherSocket.Options; }
+        }
+
         public ZeroMqQueueChannel(String name, String connectionString, bool bind)
         {
             Name = name;

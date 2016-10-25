@@ -59,5 +59,10 @@ namespace SimpleChannel.Net
         /// <param name="noAck"></param>
         /// <returns></returns>
         T Take();
+
+        /// <summary>
+        /// Number of queued messages
+        /// </summary>
+        //int Queued { get; }
     }
 }
