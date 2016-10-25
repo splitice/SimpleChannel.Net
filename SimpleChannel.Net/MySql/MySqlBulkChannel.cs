@@ -102,5 +102,13 @@ namespace SimpleChannel.Net.MySQL
             _reader.Dispose();
             _connection.Dispose();
         }
+
+        /// <summary>
+        /// Returns 1 if there is data queued, 0 otherwise
+        /// </summary>
+        public int Queued
+        {
+            get { return -1;  }
+        }
     }
 }

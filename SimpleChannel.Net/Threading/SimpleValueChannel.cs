@@ -70,5 +70,13 @@ namespace SimpleChannel.Net.Threading
         {
             _semaphore.Dispose();
         }
+
+        /// <summary>
+        /// Returns 1 if there is data queued, 0 otherwise
+        /// </summary>
+        public int Queued
+        {
+            get { lock (_valueLock) return _semaphore.CurrentCount != 0 ? 1 : 0; }
+        }
     }
 }

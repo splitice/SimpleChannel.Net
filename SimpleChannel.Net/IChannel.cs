@@ -63,6 +63,6 @@ namespace SimpleChannel.Net
         /// <summary>
         /// Number of queued messages
         /// </summary>
-        //int Queued { get; }
+        int Queued { get; }
     }
 }

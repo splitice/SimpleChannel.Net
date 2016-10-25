@@ -49,7 +49,15 @@ namespace SimpleChannel.Net.Threading
 
         public void Dispose()
         {
-            
+
+        }
+
+        /// <summary>
+        /// Returns 1 if there is data queued, 0 otherwise
+        /// </summary>
+        public int Queued
+        {
+            get { return 0; }
         }
     }
 }

@@ -187,5 +187,9 @@ namespace SimpleChannel.Net.RabbitMQ
         {
             Model.Dispose();
         }
+        public int Queued
+        {
+            get { return -1; }
+        }
     }
 }

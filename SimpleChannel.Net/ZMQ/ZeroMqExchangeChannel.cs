@@ -156,6 +156,21 @@ namespace SimpleChannel.Net.ZMQ
         }
 
         /// <summary>
+        /// Returns 1 if there is data queued, 0 otherwise
+        /// </summary>
+        public int Queued
+        {
+            get
+            {
+                if (_subscriberSocket != null)
+                {
+                    return _subscriberSocket.HasIn ? 1 : 0;
+                }
+                return _subscriberSocket.HasOut ? 1 : 0;
+            }
+        }
+
+        /// <summary>
         /// Acknowledge the last consumed message
         /// </summary>
         public void Ack()

@@ -86,6 +86,14 @@ namespace SimpleChannel.Net.Threading
         {
             takePerm.Dispose();
         }
+
+        /// <summary>
+        /// Returns 1 if there is data queued, 0 otherwise
+        /// </summary>
+        public int Queued
+        {
+            get { lock(_lock) return queue.Count; }
+        }
     }
 }
 
