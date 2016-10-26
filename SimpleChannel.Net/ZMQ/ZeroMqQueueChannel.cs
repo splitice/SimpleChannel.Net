@@ -62,22 +62,39 @@ namespace SimpleChannel.Net.ZMQ
             {
                 return false;
             }
-            InternalPut(toPut, "");
-            return true;
+
+            using (var stream = GetStream(toPut))
+            {
+                try
+                {
+                    return _publisherSocket.SendMoreFrame(Name).TrySendFrame(TimeSpan.FromMilliseconds(ms), stream.ToArray());
+                }
+                catch (NetMQ.TerminatingException)
+                {
+                    return false;
+                }
+            }
+        }
+
+        private MemoryStream GetStream(object item)
+        {
+            MemoryStream stream = new MemoryStream();
+            _ser.WriteObject(stream, item);
+            return stream;
         }
 
         private void InternalPut(object item, String routingKey)
         {
-            MemoryStream stream = new MemoryStream();
-            _ser.WriteObject(stream, item);
+            using (var stream = GetStream(item))
+            {
+                try
+                {
+                    _publisherSocket.SendMoreFrame(Name).SendFrame(stream.ToArray());
+                }
+                catch (NetMQ.TerminatingException)
+                {
 
-            try
-            {
-                _publisherSocket.SendMoreFrame(Name).SendFrame(stream.ToArray());
-            }
-            catch (NetMQ.TerminatingException)
-            {
-                
+                }
             }
         }
 
