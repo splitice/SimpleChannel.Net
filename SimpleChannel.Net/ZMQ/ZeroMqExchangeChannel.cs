@@ -166,7 +166,7 @@ namespace SimpleChannel.Net.ZMQ
                 {
                     return _subscriberSocket.HasIn ? 1 : 0;
                 }
-                return _subscriberSocket.HasOut ? 1 : 0;
+                return _publisherSocket.HasOut ? 1 : 0;
             }
         }
 
