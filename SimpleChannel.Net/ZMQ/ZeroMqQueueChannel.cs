@@ -11,10 +11,11 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Framing.Impl;
 using SimpleChannel.Net.Common;
+using SimpleChannel.Net.Serialization;
 
 namespace SimpleChannel.Net.ZMQ
 {
-    public class ZeroMqQueueChannel<T> : ZeroMqAbstractChannel, IChannel<T> where T : class
+    public class ZeroMqQueueChannel<T> : ZeroMqAbstractChannel, IRemoteChannel<T> where T : class
     {
         protected readonly String Name;
         private readonly DataContractSerializer _ser;
@@ -22,6 +23,7 @@ namespace SimpleChannel.Net.ZMQ
         private SubscriberSocket _subscriberSocket;
         private string _connectionString;
         private bool _producing = true;
+        private IChannelSerializer _serializer;
 
         public SocketOptions SendHighWatermark
         {
@@ -85,16 +87,13 @@ namespace SimpleChannel.Net.ZMQ
 
         private void InternalPut(object item, String routingKey)
         {
-            using (var stream = GetStream(item))
+            try
             {
-                try
-                {
-                    _publisherSocket.SendMoreFrame(Name).SendFrame(stream.ToArray());
-                }
-                catch (NetMQ.TerminatingException)
-                {
+                _publisherSocket.SendMoreFrame(Name).SendFrame(Serializer.Serialize(item));
+            }
+            catch (NetMQ.TerminatingException)
+            {
 
-                }
             }
         }
 
@@ -148,8 +147,7 @@ namespace SimpleChannel.Net.ZMQ
             object temp;
             try
             {
-                var stream = new MemoryStream(result);
-                temp = _ser.ReadObject(stream);
+                temp = Serializer.Deserialize(result);
             }
             catch (Exception)
             {
@@ -232,6 +230,12 @@ namespace SimpleChannel.Net.ZMQ
             {
                 _subscriberSocket.Dispose();
             }
+        }
+
+        public IChannelSerializer Serializer
+        {
+            get { return _serializer; }
+            set { _serializer = value; }
         }
     }
 }
