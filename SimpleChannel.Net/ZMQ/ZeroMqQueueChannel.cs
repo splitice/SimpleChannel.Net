@@ -18,7 +18,6 @@ namespace SimpleChannel.Net.ZMQ
     public class ZeroMqQueueChannel<T> : ZeroMqAbstractChannel, IRemoteChannel<T> where T : class
     {
         protected readonly String Name;
-        private readonly DataContractSerializer _ser;
         private PublisherSocket _publisherSocket;
         private SubscriberSocket _subscriberSocket;
         private string _connectionString;
@@ -33,7 +32,7 @@ namespace SimpleChannel.Net.ZMQ
         public ZeroMqQueueChannel(String name, String connectionString, bool bind)
         {
             Name = name;
-            _ser = new DataContractSerializer(typeof(object), new[] { typeof(T), typeof(RemoteCloseProducer) });
+            _serializer = new ChannelDatacontractSerializer(new[] { typeof(T), typeof(RemoteCloseProducer) });
             String pubStr = connectionString;
             if (!bind)
             {
@@ -65,25 +64,16 @@ namespace SimpleChannel.Net.ZMQ
                 return false;
             }
 
-            using (var stream = GetStream(toPut))
+            try
             {
-                try
-                {
-                    return _publisherSocket.SendMoreFrame(Name).TrySendFrame(TimeSpan.FromMilliseconds(ms), stream.ToArray());
-                }
-                catch (NetMQ.TerminatingException)
-                {
-                    return false;
-                }
+                return _publisherSocket.SendMoreFrame(Name).TrySendFrame(TimeSpan.FromMilliseconds(ms), Serializer.Serialize(toPut));
+            }
+            catch (NetMQ.TerminatingException)
+            {
+                return false;
             }
         }
 
-        private MemoryStream GetStream(object item)
-        {
-            MemoryStream stream = new MemoryStream();
-            _ser.WriteObject(stream, item);
-            return stream;
-        }
 
         private void InternalPut(object item, String routingKey)
         {
