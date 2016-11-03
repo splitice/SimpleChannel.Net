@@ -9,7 +9,7 @@ namespace SimpleChannel.Net.Threading
     {
         private SemaphoreSlim takePerm;
         private Queue<T> queue = new Queue<T>();
-        private object _lock = new object();
+        private SpinLock _spinner = new SpinLock();
         private bool _producing = true;
 
         public Channel()
@@ -50,10 +50,17 @@ namespace SimpleChannel.Net.Threading
             {
                 try
                 {
-                    lock (_lock)
+                    bool lockTaken = false;
+                    try
                     {
+                        _spinner.Enter(ref lockTaken);
+
                         Debug.Assert(queue.Count > 0);
                         val = queue.Dequeue();
+                    }
+                    finally
+                    {
+                        if (lockTaken) _spinner.Exit();
                     }
                 }
                 catch
@@ -70,11 +77,20 @@ namespace SimpleChannel.Net.Threading
 
         public virtual bool Offer(T toPut, int ms)
         {
-            lock (_lock)
+            bool lockTaken = false;
+            try
             {
+                _spinner.Enter(ref lockTaken);
+
                 queue.Enqueue(toPut);
             }
+            finally
+            {
+                if (lockTaken) _spinner.Exit();
+            }
+
             takePerm.Release();
+
             return true;
         }
 
@@ -93,7 +109,19 @@ namespace SimpleChannel.Net.Threading
         /// </summary>
         public int Queued
         {
-            get { lock(_lock) return queue.Count; }
+            get
+            {
+                bool lockTaken = false;
+                try
+                {
+                    _spinner.Enter(ref lockTaken);
+                    return queue.Count;
+                }
+                finally
+                {
+                    if (lockTaken) _spinner.Exit();
+                }
+            }
         }
     }
 }
