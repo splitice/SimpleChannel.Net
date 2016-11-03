@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace SimpleChannel.Net.Threading
@@ -51,10 +52,11 @@ namespace SimpleChannel.Net.Threading
                 {
                     lock (_lock)
                     {
+                        Debug.Assert(queue.Count > 0);
                         val = queue.Dequeue();
                     }
                 }
-                catch (ThreadInterruptedException)
+                catch
                 {
                     takePerm.Release();
                     throw;
@@ -70,7 +72,6 @@ namespace SimpleChannel.Net.Threading
         {
             lock (_lock)
             {
-                //Debug.WriteLine(Thread.CurrentThread.Name);
                 queue.Enqueue(toPut);
             }
             takePerm.Release();

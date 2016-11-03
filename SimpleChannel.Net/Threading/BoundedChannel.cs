@@ -13,7 +13,17 @@ namespace SimpleChannel.Net.Threading
 
         public override bool Offer(T toPut, int ms)
         {
-            if (!putPerm.Wait(ms))
+            bool canPut;
+            try
+            {
+                canPut = putPerm.Wait(ms);
+            }
+            catch
+            {
+                putPerm.Release();
+                throw;
+            }
+            if (!canPut)
             {
                 return false;
             }
