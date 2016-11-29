@@ -39,6 +39,7 @@ namespace SimpleChannel.Net.ZMQ
                 pubStr = ">" + connectionString;
             }
             _publisherSocket = new PublisherSocket(pubStr);
+            _publisherSocket.Options.SendHighWatermark = 1;
             _connectionString = connectionString;
         }
 
@@ -66,7 +67,9 @@ namespace SimpleChannel.Net.ZMQ
 
             try
             {
-                return _publisherSocket.SendMoreFrame(Name).TrySendFrame(TimeSpan.FromMilliseconds(ms), Serializer.Serialize(toPut));
+                bool ret = _publisherSocket.SendMoreFrame(Name)
+                    .TrySendFrame(TimeSpan.FromMilliseconds(ms), Serializer.Serialize(toPut));
+                return ret;
             }
             catch (NetMQ.TerminatingException)
             {
@@ -83,7 +86,6 @@ namespace SimpleChannel.Net.ZMQ
             }
             catch (NetMQ.TerminatingException)
             {
-
             }
         }
 
@@ -110,7 +112,8 @@ namespace SimpleChannel.Net.ZMQ
         {
             if (_subscriberSocket == null)
             {
-                _subscriberSocket = new SubscriberSocket(">"+_connectionString);
+                _subscriberSocket = new SubscriberSocket();
+                _subscriberSocket.Connect(_connectionString);
                 _subscriberSocket.Subscribe(Name);
             }
 
