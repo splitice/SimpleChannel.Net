@@ -23,6 +23,7 @@ namespace SimpleChannel.Net.ZMQ
         private string _connectionString;
         private bool _producing = true;
         private IChannelSerializer _serializer;
+        private bool _bind;
 
         public SocketOptions SendHighWatermark
         {
@@ -33,14 +34,8 @@ namespace SimpleChannel.Net.ZMQ
         {
             Name = name;
             _serializer = new ChannelDatacontractSerializer(new[] { typeof(T), typeof(RemoteCloseProducer) });
-            String pubStr = connectionString;
-            if (!bind)
-            {
-                pubStr = ">" + connectionString;
-            }
-            _publisherSocket = new PublisherSocket(pubStr);
-            _publisherSocket.Options.SendHighWatermark = 1;
             _connectionString = connectionString;
+            _bind = bind;
         }
 
         public bool Producing
@@ -59,6 +54,7 @@ namespace SimpleChannel.Net.ZMQ
 
         public bool Offer(T toPut, int ms)
         {
+            PublisherInit();
             bool pollWrite = _publisherSocket.Poll(PollEvents.PollOut, TimeSpan.FromMilliseconds(ms)) == PollEvents.PollOut;
             if (!pollWrite)
             {
@@ -75,6 +71,19 @@ namespace SimpleChannel.Net.ZMQ
             {
                 return false;
             }
+        }
+
+        private void PublisherInit()
+        {
+            if (_publisherSocket != null) return;
+
+            String pubStr = _connectionString;
+            if (!_bind)
+            {
+                pubStr = ">" + _connectionString;
+            }
+            _publisherSocket = new PublisherSocket(pubStr);
+            _publisherSocket.Options.SendHighWatermark = 1;
         }
 
 
@@ -113,7 +122,7 @@ namespace SimpleChannel.Net.ZMQ
             if (_subscriberSocket == null)
             {
                 _subscriberSocket = new SubscriberSocket();
-                _subscriberSocket.Connect(_connectionString);
+                _subscriberSocket.Bind(_connectionString);
                 _subscriberSocket.Subscribe(Name);
             }
 
@@ -202,7 +211,11 @@ namespace SimpleChannel.Net.ZMQ
                 {
                     return _subscriberSocket.HasIn ? 1 : 0;
                 }
-                return _publisherSocket.HasOut ? 1 : 0;
+                if (_publisherSocket != null)
+                {
+                    return _publisherSocket.HasOut ? 1 : 0;
+                }
+                return 0;
             }
         }
 
