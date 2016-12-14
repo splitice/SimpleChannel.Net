@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
+using NetMQ.Core;
 using NetMQ.Sockets;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -73,17 +75,44 @@ namespace SimpleChannel.Net.ZMQ
             }
         }
 
+        private static String AddressAny(string addr)
+        {
+            string address;
+            int length = addr.IndexOf("://", StringComparison.Ordinal);
+            address = addr.Substring(length + "://".Length);
+            var ip = IPAddress.Parse(address);
+            if (Equals(ip, IPAddress.Any) || Equals(ip, IPAddress.IPv6Any))
+            {
+                ip = IPAddress.Loopback;
+                return addr.Substring(0, length) + "://" + ip;
+            }
+            return addr;
+        }
+
         private void PublisherInit()
         {
             if (_publisherSocket != null) return;
 
-            String pubStr = _connectionString;
-            if (!_bind)
+            String connstr = _connectionString;
+            if (!_bind || _subscriberSocket != null)
             {
-                pubStr = ">" + _connectionString;
+                connstr = ">" + AddressAny(connstr);
             }
-            _publisherSocket = new PublisherSocket(pubStr);
+            _publisherSocket = new PublisherSocket(connstr);
             _publisherSocket.Options.SendHighWatermark = 1;
+        }
+
+        private void SubscriberInit()
+        {
+            if (_subscriberSocket != null) return;
+            _subscriberSocket = new SubscriberSocket();
+            var connstr = _connectionString;
+            if (!_bind || _publisherSocket != null)
+            {
+                connstr = ">" + AddressAny(connstr);
+            }
+            _subscriberSocket.Bind(connstr);
+            _subscriberSocket.Subscribe(Name);
         }
 
 
@@ -119,12 +148,7 @@ namespace SimpleChannel.Net.ZMQ
         /// <returns></returns>
         public bool Poll(out T val, int timeout, bool noAck)
         {
-            if (_subscriberSocket == null)
-            {
-                _subscriberSocket = new SubscriberSocket();
-                _subscriberSocket.Bind(_connectionString);
-                _subscriberSocket.Subscribe(Name);
-            }
+            SubscriberInit();
 
             //Get the message
             if (timeout >= 0)
