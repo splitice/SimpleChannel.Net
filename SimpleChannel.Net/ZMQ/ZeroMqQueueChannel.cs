@@ -75,18 +75,31 @@ namespace SimpleChannel.Net.ZMQ
             }
         }
 
-        private static String AddressAny(string addr)
+        private static String AddressAny(string fullZmqAddr)
         {
             string address;
-            int length = addr.IndexOf("://", StringComparison.Ordinal);
-            address = addr.Substring(length + "://".Length);
-            var ip = IPAddress.Parse(address);
+            int length = fullZmqAddr.IndexOf("://", StringComparison.Ordinal);
+            address = fullZmqAddr.Substring(length + "://".Length);
+            length = address.IndexOf(":", StringComparison.Ordinal);
+            if (length != -1)
+            {
+                address = address.Substring(0, length);
+            }
+            IPAddress ip;
+            try
+            {
+                ip = IPAddress.Parse(address);
+            }
+            catch (FormatException ex)
+            {
+                throw new FormatException(String.Format("Unable to parse IP address: {0}", address));
+            }
             if (Equals(ip, IPAddress.Any) || Equals(ip, IPAddress.IPv6Any))
             {
                 ip = IPAddress.Loopback;
-                return addr.Substring(0, length) + "://" + ip;
+                return fullZmqAddr.Substring(0, length) + "://" + ip;
             }
-            return addr;
+            return fullZmqAddr;
         }
 
         private void PublisherInit()
