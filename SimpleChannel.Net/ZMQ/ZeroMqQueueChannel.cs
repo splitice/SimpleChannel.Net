@@ -131,6 +131,7 @@ namespace SimpleChannel.Net.ZMQ
 
         private void InternalPut(object item, String routingKey)
         {
+            PublisherInit();
             try
             {
                 _publisherSocket.SendMoreFrame(Name).SendFrame(Serializer.Serialize(item));
